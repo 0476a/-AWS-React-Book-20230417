@@ -41,6 +41,7 @@ const inputLabel = css`
     font-weight: 600;
 `;
 
+
 const loginButton = css`
     margin: 10px 0px;
     border: 1px solid #dbdbdb;
@@ -70,8 +71,16 @@ const register = css`
     font-weight: 600;
 `;
 
+const errorMsg = css`
+    margin-left: 10px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: red;
+`;
+
 const Register = () => {
     const [registerUser, setRegisterUser] = useState({email: "", password: "", name: ""})
+    const [errorMessages, setErrorMessages] = useState({email: "", password: "", name: ""})
 
     // 이거 하나가지고 3개의 input을 처리하고자 하기 때문에 name 속성값을 받아준다.
     const onChangeHandle = (e) => {
@@ -79,7 +88,8 @@ const Register = () => {
         setRegisterUser({...registerUser, [name]: value});
     }
 
-    const registeSubmit = () => {
+
+    const registeSubmit = async () => {
         const data = {
             ...registerUser
         }
@@ -89,24 +99,37 @@ const Register = () => {
                 "Content-Type": "application/json"
             }
         }
-        // 값을 해당 url에 보낼 수 있다. JSON 형태로 바꿔서 보내준다. + 옵션도 객체형태로 바꿔서 넣어준다.
-        axios.post("http://localhost:8080/auth/signup", JSON.stringify(data), option)
+        try {
+            
+            const response = await axios.post("http://localhost:8080/auth/signup", JSON.stringify(data), option);
+            setErrorMessages({email: "", password: "", name: ""});
+            console.log(response)
+        } catch(error) {
+            setErrorMessages({email: "", password: "", name: "", ...error.response.data.errorData});
+        }
+        
+        
         // sesscess랑 똑같다고 생각하면됨.
-        .then(response => {
-            console.log("성공");
-            console.log(response);
-        })
-        // error와 똑같다고 생각하면됨.
-        .catch(error => {
-            console.log("에러");
-            console.log(error.response.data.errorData);
-        });
+        // axios
+        //  // 값을 해당 url에 보낼 수 있다. JSON 형태로 바꿔서 보내준다. + 옵션도 객체형태로 바꿔서 넣어준다.
+        //  // response를 리턴해준다.
+        // .post("http://localhost:8080/auth/signup", JSON.stringify(data), option);
+        // .then(response => {
+        //     // 리턴값의 형태가 promise 이기 때문에 바로뒤에 then이 사용가능하다!
+        //     setErrorMessages({email: "", password: "", name: ""});
+        //     console.log(response);
+        // })
+        // // error와 똑같다고 생각하면됨.
+        // .catch(error => {
+        //                     // 값을 계속 초기화 시켜줘야지 나중에 정상적으로 입력하면 사라지게 됨.
+        //     setErrorMessages({email: "", password: "", name: "", ...error.response.data.errorData});
+        // });
 
         // 웹은 싱글스레드이기 때문에 비동기가 매우 중요함! -> 맞겨놓고 딴짓해도 됨.
         // 동기 설정을 하려면 좀 복잡함!
         // 위에꺼랑 따로 놈! 순서를 지키려면 함수안에 넣어줘야함!
         // 프로미스..? 
-        console.log("비동기 테스트");
+        // console.log("비동기 테스트");
     }
 
     return (
@@ -120,14 +143,19 @@ const Register = () => {
                     <LoginInput type="email" placeholder="Type your email" onChange={onChangeHandle} name="email">
                         <FiUser />    
                     </LoginInput>
+                    <div css={errorMsg}>{errorMessages.email}</div>
+
                     <label css={inputLabel}>Password</label>
                     <LoginInput type="password" placeholder="Type your password" onChange={onChangeHandle} name="password">
                         <FiLock />    
                     </LoginInput>
+                    <div css={errorMsg}>{errorMessages.password}</div>
+
                     <label css={inputLabel}>Name</label>
                     <LoginInput type="text" placeholder="Type your name" onChange={onChangeHandle} name="name">
                         <BiRename />    
                     </LoginInput>
+                    <div css={errorMsg}>{errorMessages.name}</div>
 
                     <button css={loginButton} onClick={registeSubmit}>REGISTER</button>
                 </div>
