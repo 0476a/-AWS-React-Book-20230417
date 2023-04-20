@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import React, { useState } from 'react';
 // 라우터 안에서만 돌아다니게 하는 것 Link
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import LoginInput from '../../components/UI/Login/LoginInput/LoginInput';
 import { FiUser, FiLock } from 'react-icons/fi';
 import { BiRename } from 'react-icons/bi';
@@ -79,6 +79,8 @@ const errorMsg = css`
 `;
 
 const Register = () => {
+    const navigate = useNavigate();
+
     const [registerUser, setRegisterUser] = useState({email: "", password: "", name: ""})
     const [errorMessages, setErrorMessages] = useState({email: "", password: "", name: ""})
 
@@ -100,10 +102,10 @@ const Register = () => {
             }
         }
         try {
-            
-            const response = await axios.post("http://localhost:8080/auth/signup", JSON.stringify(data), option);
+            await axios.post("http://localhost:8080/auth/signup", JSON.stringify(data), option);
             setErrorMessages({email: "", password: "", name: ""});
-            console.log(response)
+            alert("회원가입 성공!");
+            navigate("/login");
         } catch(error) {
             setErrorMessages({email: "", password: "", name: "", ...error.response.data.errorData});
         }
