@@ -109,7 +109,6 @@ const Sidebar = () => {
             // enabled true인 상태에만 들고온다.
             enabled: accessToken
         });
-        console.log(response)
         return response;
     });
 

@@ -12,7 +12,7 @@ const mainContainer = css`
 
 const BookDetail = () => {
     const { bookId } = useParams();
-    
+
     const getBook = useQuery(["getBook"], async () => {
         const option = {
             headers: {
@@ -23,28 +23,38 @@ const BookDetail = () => {
         return response;
     });
 
+    const getLikeCount = useQuery(["getLikeCount"], async () => {
+        const option = {
+            headers: {
+                Authorization: localStorage.getItem("accessToken")
+            }
+        }
+        const response = await axios.get(`http://localhost:8080/book/${bookId}/like`, option);
+        return response;
+    });
+
     // 해당 로직이 있어야 데이터가 불러오는 동안은 해당 값이 return 되게됨.
     if(getBook.isLoading) {
         return <div>불러오는 중...</div>
     }
 
-    if(!getBook.isLoading) // 데이터가 불러오고 난후에 true가 되서 return 값을 반환 받는다.
+    // if(!getBook.isLoading) // 데이터가 불러오고 난후에 true가 되서 return 값을 반환 받는다.
     return (
         <div css={mainContainer}>
             <Sidebar />
             <header>
                 <h1>{getBook.data.data.bookName}</h1>
-                <p>분류:{getBook.data.data.categoryName} / 저자명:{getBook.data.data.authorName} / 출판사:{getBook.data.data.publisherName} / 추천: 10</p>
+                <p>분류:{getBook.data.data.categoryName} / 저자명:{getBook.data.data.authorName} / 출판사:{getBook.data.data.publisherName} / 추천: {getLikeCount.isLoading ? "조회중..." : getLikeCount.data.data}</p>
             </header>
             <main>
                 <div>
-                    <img src={getBook.data.data.coverImgUrl} alt={getBook.data.data.categoryName}  />
+                    <img src={getBook.data.data.coverImgUrl} alt={getBook.data.data.categoryName} />
                 </div>
                 <div>
 
                 </div>
                 <div>
-                    
+                    <button>추천</button>
                 </div>
             </main>
         </div>

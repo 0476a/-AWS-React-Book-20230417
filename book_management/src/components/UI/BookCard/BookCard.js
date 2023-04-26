@@ -122,7 +122,7 @@ const BookCard = ({ book }) => {
                 </div>
             </main>
             <footer css={footer}>
-                <div css={like}><div css={likeIcon}><AiOutlineLike /></div>추천: 10 </div>
+                <div css={like}><div css={likeIcon}><AiOutlineLike /></div>추천: {book.likeCount} </div>
                 <h2>저자명: {book.authorName}</h2>
                 <h2>출판사: {book.publisherName}</h2>
             </footer>
