@@ -6,6 +6,7 @@ import Register from "./pages/Register/Register";
 import Main from "./pages/Main/Main";
 import AuthRoute from "./components/Routes/AuthRoute/AuthRoute";
 import AuthRouteReactQuery from "./components/Routes/AuthRoute/AuthRouteReactQuery";
+import BookDetail from "./pages/BookDetail/BookDetail";
 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <Route exact path="/login" element={<AuthRouteReactQuery path="/login" element={<Login />} />}/>
         <Route path="/register" element={<AuthRouteReactQuery path="/register" element={<Register />} />}/>
         <Route path="/" element= {<AuthRouteReactQuery path="/" element={<Main />} />} />
+        <Route path="/book/:bookId" element= {<AuthRouteReactQuery path="/book" element={<BookDetail />} />} />
         <Route path="/admin/search" element= {<AuthRouteReactQuery path="/" element={<Main />} />} />
         
         {/* <Route path="/callback" Component={Callback}/>
