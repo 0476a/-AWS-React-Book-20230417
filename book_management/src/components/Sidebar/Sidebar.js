@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { GrFormClose } from 'react-icons/gr';
 import ListButton from './ListButton/ListButton';
 import { BiHome, BiLike, BiListUl, BiLogOut } from 'react-icons/bi';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import axios from 'axios';
 
 const sidebar = (isOpen) => css`
@@ -98,20 +98,9 @@ const footer = css`
 
 const Sidebar = () => {
     const [ isOpen, setIsOpen ] = useState(false);
-                                // 키값을 배열에 넣어주는 것이 정석이다.(이렇게 쓰는 걸로 통일하자는 뜻임!) 키값을 여러개 넣는 경우가 있음.
-    const { data, isLoading } = useQuery(["principal"], async () => {
-        const accessToken = localStorage.getItem("accessToken")
-        // 해당 값이 fresh 한지 안한지 확인함! 받은 값이 같으면 상태를 바꾸지 않고 다르면 상태를 바꾸어 재랜더링 해준다. -> 자동으로 해줌.
-        const response = await axios.get("http://localhost:8080/auth/principal",
-        {params: {accessToken}},
-        {
-            // 값이 없으면 false이다. -> true와 false만 값이 나옴.
-            // enabled true인 상태에만 들고온다.
-            enabled: accessToken
-        });
-        return response;
-    });
-
+    
+    const queryClient = useQueryClient();
+    
     const sidebarOpenClickHandle = () => {
         if(!isOpen){
             setIsOpen(true);
@@ -128,24 +117,25 @@ const Sidebar = () => {
         }
     }
 
-    // isLoading 값이 바뀌면 재랜더링됨.
-    if(isLoading) {
+    // isLoading 값이 바뀌면 재랜더링됨. isLoading을 queryClient로 불러올 경우
+    if(queryClient.getQueryState("principal").status === "loading") {
         return <>로딩중...</>;
     }
 
+    const principalData = queryClient.getQueryData("principal").data;
     // 데이터가 들어가기 전에 밑에 리턴에 먼저 실행되기 때문에 !isLoading을 사용해줌.
     // 값이 같다가 넣어져서 돌아온 상태임. -> 비동기 된것을 동기처럼 넣어주기 위해서 isLoading을 사용함!
-    // return은 한줄임!
-    if(!isLoading)
+    // return은 한줄임! 해당 조건 생략 가능!
+    if(!queryClient.getQueryState("principal").isLoading)
     return (
         <div css={sidebar(isOpen)} onClick={sidebarOpenClickHandle}>
             <header css={header}>
                 <div css={userIcon}>
-                    {data.data.name.substr(0, 1)}
+                    {principalData.name.substr(0, 1)}
                 </div>
                 <div css={userInfo}>
-                    <h1 css={userName}>{data.data.name}</h1>
-                    <p css={userEmail}>{data.data.email}</p>
+                    <h1 css={userName}>{principalData.name}</h1>
+                    <p css={userEmail}>{principalData.email}</p>
                 </div>
                 <div css={closeButton} onClick={sidebarCloseClickHandle}><GrFormClose/></div>
             </header>
