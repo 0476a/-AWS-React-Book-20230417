@@ -114,6 +114,7 @@ const Sidebar = () => {
     const logoutClickHandle = () => {
         if(window.confirm("로그아웃 하시겠습니까?")) {
             localStorage.removeItem("accessToken");
+            queryClient.invalidateQueries("principal");
         }
     }
 
@@ -123,6 +124,8 @@ const Sidebar = () => {
     }
 
     const principalData = queryClient.getQueryData("principal").data;
+    const roles = principalData.authorities.split(",");
+
     // 데이터가 들어가기 전에 밑에 리턴에 먼저 실행되기 때문에 !isLoading을 사용해줌.
     // 값이 같다가 넣어져서 돌아온 상태임. -> 비동기 된것을 동기처럼 넣어주기 위해서 isLoading을 사용함!
     // return은 한줄임! 해당 조건 생략 가능!
@@ -143,6 +146,7 @@ const Sidebar = () => {
                 <ListButton title="Dashboard"><BiHome /></ListButton>
                 <ListButton title="Likes"><BiLike /></ListButton>
                 <ListButton title="Rental"><BiListUl /></ListButton>
+                {roles.includes("ROLE_ADMIN") ? (<ListButton title="RegisterBookList"><BiListUl /></ListButton>) : ""}
             </main>
             <footer css={footer}>
                 <ListButton title="Logout" onClick={logoutClickHandle}><BiLogOut /></ListButton>    
